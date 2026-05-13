@@ -1,67 +1,623 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+這是一份為「苗栗優選 (Miaoli Select)」量身打造的單頁式電子商務網站原始碼。
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+身為前端工程師，我為你嚴格遵守了「極簡美學」與「日系文青」的設計規範，並採用純 HTML5、CSS3 與 Vanilla JavaScript 開發。你可以直接將下方完整的程式碼複製並儲存為 `index.html`，無須任何額外設定，即可直接部署至 GitHub Pages。
 
+### 完整 `index.html` 原始碼
+
+```html
+<!DOCTYPE html>
+<html lang="zh-TW">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF8" />
-<title>發明模板</title>
-<link href="css/style.css" rel="stylesheet" type="text/css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>苗栗優選 | Miaoli Select</title>
+    <!-- 引入 Google Fonts：使用優雅的襯線體與簡潔的無襯線體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500&family=Noto+Serif+TC:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================
+           CSS 變數與基礎設定 (大地色系 & 日系文青)
+           ========================================= */
+        :root {
+            --bg-color: #F9F8F4;      /* 米白色 */
+            --primary-color: #4A5D4E; /* 深苔蘚綠 */
+            --accent-color: #8D6E63;  /* 溫暖木質棕 */
+            --text-main: #333333;
+            --text-light: #666666;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .serif {
+            font-family: 'Noto Serif TC', serif;
+        }
+
+        /* =========================================
+           導覽列 (Navbar)
+           ========================================= */
+        #navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: transparent;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        #navbar.scrolled {
+            background-color: var(--bg-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 1rem 5%;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        #navbar.scrolled .logo, #navbar.scrolled .nav-links a, #navbar.scrolled .cart-btn {
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--white);
+            font-weight: 400;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .cart-btn {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.2rem;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background-color: var(--accent-color);
+            color: var(--white);
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 50%;
+            font-family: sans-serif;
+        }
+
+        /* =========================================
+           英雄區 (Hero Section)
+           ========================================= */
+        #hero {
+            height: 100vh;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://images.unsplash.com/photo-1574790382218-472097eec430?q=80&w=2000&auto=format&fit=crop'); /* 佔位圖：山林茶園意象 */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--white);
+        }
+
+        #hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            letter-spacing: 4px;
+        }
+
+        #hero p {
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        /* =========================================
+           商品展示區 (Product Grid)
+           ========================================= */
+        #shop {
+            padding: 5rem 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 3rem;
+            letter-spacing: 2px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .product-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+
+        .product-img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .product-title {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-price {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .add-to-cart-btn {
+            margin-top: auto;
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            padding: 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .add-to-cart-btn:hover {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        /* =========================================
+           側邊購物車 (Sidebar Cart)
+           ========================================= */
+        #cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            background-color: var(--white);
+            box-shadow: -5px 0 15px rgba(0,0,0,0.05);
+            transition: right 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+            z-index: 1002;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #cart-sidebar.open {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h2 {
+            color: var(--primary-color);
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .cart-items {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .cart-item-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 1rem;
+        }
+
+        .cart-item-details {
+            flex-grow: 1;
+        }
+
+        .cart-item-title {
+            font-size: 1rem;
+            color: var(--primary-color);
+            margin-bottom: 0.2rem;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .qty-btn {
+            background: #f0f0f0;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            color: #d9534f;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-left: auto;
+        }
+
+        .cart-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #eee;
+            background-color: var(--bg-color);
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--accent-color);
+            color: var(--white);
+            border: none;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .checkout-btn:hover {
+            background-color: #795d53;
+        }
+
+        #cart-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1001;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        #cart-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+
+        /* =========================================
+           頁腳 (Footer)
+           ========================================= */
+        footer {
+            background-color: var(--primary-color);
+            color: var(--white);
+            text-align: center;
+            padding: 3rem 5%;
+        }
+
+        footer p {
+            margin-bottom: 1rem;
+            font-weight: 300;
+        }
+
+        footer a {
+            color: var(--bg-color);
+            text-decoration: none;
+            border-bottom: 1px solid var(--bg-color);
+        }
+
+        /* RWD 調整 */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none; /* 簡化手機版選單 */
+            }
+            #hero h1 { font-size: 2.5rem; }
+            .cart-item { flex-direction: column; align-items: flex-start; }
+            .cart-item-img { margin-bottom: 1rem; }
+            .remove-btn { margin-left: 0; margin-top: 0.5rem; }
+        }
+    </style>
 </head>
 <body>
-<div id="wrapper">
-  <div id="content">
-    <div id="header">
 
-     <div id="logo">
-    <! img src="images/logo.jpg" alt="標誌" width="1024" height="600">
-    <img src="images/logo.jpg" alt="標誌" width="60" height="40">
-    <h4>在這裡放您的標語</h4>
-</div>
-
-	</div>
-
-      <div id="links">
-        <ul>
-          <li><a href="#">首頁</a></li>
-         <li><a href="aboutus.html" target="_blank">關於我們</a></li>
-          <li><a href="#">科技</a></li>
-          <li><a href="#">聯絡我們</a></li>
+    <!-- 導覽列 -->
+    <nav id="navbar">
+        <a href="#" class="logo serif">苗栗優選</a>
+        <ul class="nav-links">
+            <li><a href="#hero">首頁</a></li>
+            <li><a href="#shop">嚴選商品</a></li>
+            <li><a href="#footer">聯絡我們</a></li>
         </ul>
-      </div>
-    </div>
-    <div id="mainimg">
-      <h3>發明</h3>
-      <h4>為無線世界</h4>
-    </div>
-    <div id="contentarea">
-      <div id="leftbar">
-        <h2>您好！</h2>
-        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut id nisl nec leo congue fringilla. Suspendisse potenti. Phasellus sed velit eget sapien interdum ultrices. Nullam nec magna. Maecenas cursus. Etiam sapien neque, auctor eu, volutpat at, condimentum et, odio. Morbi id lorem. Nam urna ante, venenatis sed, molestie eu, dictum sit amet, tellus. Phasellus pellentesque magna vitae elit. In dignissim eleifend odio. Curabitur at libero. Donec est justo, pellentesque eu, vulputate feugiat, ultrices quis, nunc. Sed neque. Nulla egestas, risus id consectetuer ultrices, ante turpis posuere ligula, ac pulvinar tortor dui ac odio. Curabitur auctor urna sed purus. In varius。</p>
-        <br />
-        <p>Nulla sit amet magna non enim posuere porttitor. Vestibulum ante. Nam et nulla vestibulum libero facilisis aliquet. Vivamus ante velit, facilisis eu, pulvinar nec, ultricies vel, sem. Morbi ac velit. Sed est. Proin vehicula. Maecenas ac pede. Fusce rhoncus. Maecenas at quam. Aenean nunc felis, elementum vel, faucibus vitae, nonummy et, tellus. Nulla auctor venenatis urna. Donec accumsan urna sed libero. Fusce at mi eu leo sollicitudin adipiscing. Ut metus purus, gravida nec, scelerisque quis, venenatis non, ante. Aliquam a leo vel libero tempus scelerisque. Morbi iaculis. Ut libero。</p>
-        <br />
-        <a href="#">更多 ></a><br />
-        <br />
-      </div>
-      <div id="rightbar">
-        <h2>最新消息</h2>
-        <p><span class="orangetext">12/08/2006</span><br />
-          Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut id a nisl nec leo congue fringilla. <br />
-          <br />
-          <span class="orangetext">10/08/2006</span><br />
-          Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut id a nisl nec leo congue fringilla. <br />
-          <br />
-          <span class="orangetext">28/07/2006</span><br />
-          Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut id a nisl nec leo congue fringilla. </p>
-      </div>
-    </div>
-    <div id="bottom">
-      <div id="email"><a href="mailto:info@yourcompany.com">info@yourcompany.com</a></div>
-      <div id="validtext">
-        <p>有效的 <a href="http://validator.w3.org/check?uri=referer">XHTML</a> | <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a></p>
-      </div>
-    </div>
-  </div>
-</div>
+        <button class="cart-btn" id="open-cart">
+            🛒 購物車
+            <span class="cart-count" id="cart-count">0</span>
+        </button>
+    </nav>
+
+    <!-- 英雄區 -->
+    <header id="hero">
+        <h1 class="serif">品味山城的純粹</h1>
+        <p>嚴選苗栗在地農產與職人手作，將自然的美好帶入日常。</p>
+    </header>
+
+    <!-- 商品展示區 -->
+    <main id="shop">
+        <h2 class="section-title serif">嚴選好物</h2>
+        <div class="product-grid" id="product-grid">
+            <!-- 產品卡片將由 JavaScript 動態生成 -->
+        </div>
+    </main>
+
+    <!-- 購物車側邊欄 -->
+    <div id="cart-overlay"></div>
+    <aside id="cart-sidebar">
+        <div class="cart-header">
+            <h2 class="serif">你的購物車</h2>
+            <button class="close-cart" id="close-cart">✕</button>
+        </div>
+        <div class="cart-items" id="cart-items-container">
+            <!-- 購物車內容將由 JavaScript 動態生成 -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>總計</span>
+                <span id="cart-total-price">NT$ 0</span>
+            </div>
+            <button class="checkout-btn">前往結帳</button>
+        </div>
+    </aside>
+
+    <!-- 頁腳 -->
+    <footer id="footer">
+        <p class="serif">苗栗優選 Miaoli Select © 2026</p>
+        <p>將自然餽贈，與您分享。</p>
+        <p><a href="https://github.com" target="_blank">View on GitHub</a></p>
+    </footer>
+
+    <!-- =========================================
+         JavaScript 邏輯區塊
+         ========================================= -->
+    <script>
+        // 1. 商品資料 (模擬資料庫)
+        const products = [
+            { id: 1, name: '陳年酸柑茶', price: 850, img: 'https://images.unsplash.com/photo-1597481499750-3e6b22637e12?q=80&w=600&auto=format&fit=crop' },
+            { id: 2, name: '純淨野百花蜜', price: 450, img: 'https://images.unsplash.com/photo-1587049352847-81a56d773c1c?q=80&w=600&auto=format&fit=crop' },
+            { id: 3, name: '職人手作柴燒杯', price: 1200, img: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=600&auto=format&fit=crop' },
+            { id: 4, name: '傳統客家桔醬', price: 280, img: 'https://images.unsplash.com/photo-1589134704153-625c179c3722?q=80&w=600&auto=format&fit=crop' },
+            { id: 5, name: '天然古法樟腦皂', price: 250, img: 'https://images.unsplash.com/photo-1600857062241-98f516a31481?q=80&w=600&auto=format&fit=crop' },
+            { id: 6, name: '有機友善石虎米', price: 320, img: 'https://images.unsplash.com/photo-1586201375761-83865001e8ac?q=80&w=600&auto=format&fit=crop' }
+        ];
+
+        // 購物車狀態
+        let cart = [];
+
+        // DOM 元素
+        const productGrid = document.getElementById('product-grid');
+        const cartItemsContainer = document.getElementById('cart-items-container');
+        const cartCountBadge = document.getElementById('cart-count');
+        const cartTotalPriceDisplay = document.getElementById('cart-total-price');
+        const cartSidebar = document.getElementById('cart-sidebar');
+        const cartOverlay = document.getElementById('cart-overlay');
+        const openCartBtn = document.getElementById('open-cart');
+        const closeCartBtn = document.getElementById('close-cart');
+        const navbar = document.getElementById('navbar');
+
+        // 2. 渲染商品列表
+        function renderProducts() {
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${product.img}" alt="${product.name}" class="product-img" loading="lazy">
+                    <div class="product-info">
+                        <h3 class="product-title">${product.name}</h3>
+                        <p class="product-price">NT$ ${product.price}</p>
+                        <button class="add-to-cart-btn" onclick="addToCart(${product.id})">加入購物車</button>
+                    </div>
+                `;
+                productGrid.appendChild(card);
+            });
+        }
+
+        // 3. 購物車邏輯：加入商品
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            updateCartUI();
+            openCart(); // 加入後自動打開購物車
+        }
+
+        // 4. 購物車邏輯：更新數量
+        function changeQuantity(productId, delta) {
+            const item = cart.find(i => i.id === productId);
+            if (item) {
+                item.quantity += delta;
+                if (item.quantity <= 0) {
+                    removeFromCart(productId);
+                } else {
+                    updateCartUI();
+                }
+            }
+        }
+
+        // 5. 購物車邏輯：移除商品
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartUI();
+        }
+
+        // 6. 更新購物車 UI (列表、總數量、總金額)
+        function updateCartUI() {
+            // 清空列表
+            cartItemsContainer.innerHTML = '';
+            let totalCount = 0;
+            let totalPrice = 0;
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p style="color:var(--text-light); text-align:center;">購物車目前是空的</p>';
+            } else {
+                cart.forEach(item => {
+                    totalCount += item.quantity;
+                    totalPrice += item.price * item.quantity;
+
+                    const cartItemEl = document.createElement('div');
+                    cartItemEl.className = 'cart-item';
+                    cartItemEl.innerHTML = `
+                        <img src="${item.img}" alt="${item.name}" class="cart-item-img">
+                        <div class="cart-item-details">
+                            <h4 class="cart-item-title">${item.name}</h4>
+                            <p style="color:var(--text-light); font-size:0.9rem;">NT$ ${item.price}</p>
+                            <div class="cart-item-controls">
+                                <button class="qty-btn" onclick="changeQuantity(${item.id}, -1)">-</button>
+                                <span>${item.quantity}</span>
+                                <button class="qty-btn" onclick="changeQuantity(${item.id}, 1)">+</button>
+                            </div>
+                        </div>
+                        <button class="remove-btn" onclick="removeFromCart(${item.id})">移除</button>
+                    `;
+                    cartItemsContainer.appendChild(cartItemEl);
+                });
+            }
+
+            // 更新數字顯示
+            cartCountBadge.textContent = totalCount;
+            cartTotalPriceDisplay.textContent = `NT$ ${totalPrice.toLocaleString()}`;
+        }
+
+        // 7. 側邊欄與 Overlay 開關控制
+        function openCart() {
+            cartSidebar.classList.add('open');
+            cartOverlay.classList.add('show');
+            document.body.style.overflow = 'hidden'; // 防止背景滾動
+        }
+
+        function closeCart() {
+            cartSidebar.classList.remove('open');
+            cartOverlay.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        openCartBtn.addEventListener('click', openCart);
+        closeCartBtn.addEventListener('click', closeCart);
+        cartOverlay.addEventListener('click', closeCart);
+
+        // 8. 導覽列滾動效果
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+                // 改變非白色背景時的字體顏色
+                document.querySelectorAll('#navbar:not(.scrolled) .nav-links a, #navbar:not(.scrolled) .cart-btn').forEach(el => {
+                    el.style.color = 'var(--text-main)'; 
+                });
+            } else {
+                navbar.classList.remove('scrolled');
+                document.querySelectorAll('.nav-links a, .cart-btn').forEach(el => el.style.color = 'var(--white)');
+            }
+        });
+
+        // 初始化
+        renderProducts();
+        updateCartUI();
+
+    </script>
 </body>
 </html>
+
+```
